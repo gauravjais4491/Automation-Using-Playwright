@@ -91,13 +91,10 @@ class SecurePageForStorePage {
         for (let i = 0; i < priceCount; i++) {
             await this.priceLocator.nth(i).click();
             let temp = 0;
-            console.log((await this.sizeLocator.first().textContent()).trim())
             if ((await this.sizeLocator.first().textContent()).trim() === "Size") {
                 const sizeValueCount = await this.sizeValue.count();
                 for (let j = 0; j < sizeValueCount; j++) {
                     const productSizeText = (await this.sizeValue.nth(j).textContent()).trim();
-                    console.log("+++++++" + sizeValueCount)
-                    console.log(`------${productSizeText}`)
                     if (!productSizeArray.includes(productSizeText) && !(await this.sizeValue.nth(j).isChecked())) {
                         temp = 1;
                     }
@@ -111,9 +108,14 @@ class SecurePageForStorePage {
                 const size = await this.page.locator('.js.product-form__input').nth(1).locator('>label').count()
                 console.log(size)
                 for (let i = 0; i < size; i++) {
-                    console.log("-------------------------")
-                    console.log((await this.page.locator('.js.product-form__input').nth(1).locator('>label').nth(i).textContent()).trim())
-                    console.log("-------------------------")
+                    const productSizeText = (await this.page.locator('.js.product-form__input').nth(1).locator('>label').nth(i).textContent()).trim()
+                    if (!productSizeArray.includes(productSizeText) && !(await this.sizeValue.nth(i).isChecked())) {
+                        temp = 1;
+                    }
+                    else {
+                        temp = 0;
+                        break;
+                    }
                 }
             }
             if (temp !== 0) {
