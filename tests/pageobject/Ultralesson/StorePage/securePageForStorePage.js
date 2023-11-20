@@ -83,34 +83,46 @@ class SecurePageForStorePage {
     get sizeValue() {
         return this.page.locator(`.js.product-form__input > label`)
     }
+    get sizeLocator() {
+        return this.page.locator('.js.product-form__input > legend')
+    }
     async isFilteredAccordingToSizeOrNot(productSizeArray) {
         const priceCount = await this.priceLocator.count();
-
         for (let i = 0; i < priceCount; i++) {
             await this.priceLocator.nth(i).click();
-
-            const sizeValueCount = await this.sizeValue.count();
             let temp = 0;
-            for (let j = 0; j < sizeValueCount; j++) {
-                const productSizeText = (await this.sizeValue.nth(j).textContent()).trim();
-                console.log("+++++++"+sizeValueCount)
-                console.log(`------${productSizeText}`)
-                if (!productSizeArray.includes(productSizeText) && !(await this.sizeValue.nth(j).isChecked())) {
-                    temp = 1;
+            console.log((await this.sizeLocator.first().textContent()).trim())
+            if ((await this.sizeLocator.first().textContent()).trim() === "Size") {
+                const sizeValueCount = await this.sizeValue.count();
+                for (let j = 0; j < sizeValueCount; j++) {
+                    const productSizeText = (await this.sizeValue.nth(j).textContent()).trim();
+                    console.log("+++++++" + sizeValueCount)
+                    console.log(`------${productSizeText}`)
+                    if (!productSizeArray.includes(productSizeText) && !(await this.sizeValue.nth(j).isChecked())) {
+                        temp = 1;
+                    }
+                    else {
+                        temp = 0;
+                        break;
+                    }
                 }
-                else{
-                    temp = 0;
-                    break;
-                }
-                
             }
-            if(temp!==0){
+            else {
+                const size = await this.page.locator('.js.product-form__input').nth(1).locator('>label').count()
+                console.log(size)
+                for (let i = 0; i < size; i++) {
+                    console.log("-------------------------")
+                    console.log((await this.page.locator('.js.product-form__input').nth(1).locator('>label').nth(i).textContent()).trim())
+                    console.log("-------------------------")
+                }
+            }
+            if (temp !== 0) {
                 this.logBrandMismatchError();
             }
             await this.page.goBack();
         }
-    }
 
+    }
     productSizeMatches(productSizeArray, productSize) {
         return productSizeArray.some((size) => productSize.includes(size));
     }
